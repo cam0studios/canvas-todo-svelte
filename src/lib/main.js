@@ -2,7 +2,7 @@ import { writable } from "svelte/store";
 
 import { highTimeSheet, middleTimeSheet, TimeSheet } from "../times";
 
-const apiToken = localStorage.getItem("api-token") || "";
+var apiToken = localStorage.getItem("api-token") || "";
 const corsProxyURL = "https://hcpss.space/api/canvas";
 const apiURL = "v1";
 
@@ -22,12 +22,26 @@ export const gradeStore = writable(null);
 export const announcementStore = writable(null);
 export const inboxStore = writable(null);
 
+export function setToken(token) {
+	apiToken = token;
+	localStorage.setItem("api-token", token);
+	updateStores();
+}
+
+updateStores();
 export async function updateStores() {
-	let rets = await Promise.all([updateTodo(), updateGrades(), updateAnnouncements(), updateInbox()]);
-	todoStore.set(rets[0]);
-	gradeStore.set(rets[1]);
-	announcementStore.set(rets[2]);
-	inboxStore.set(rets[3]);
+	let stores = [todoStore, gradeStore, announcementStore, inboxStore];
+	for (let store of stores) {
+		store.set(null);
+	}
+	let funcs = [updateTodo, updateGrades, updateAnnouncements, updateInbox];
+	funcs = funcs.map((func, i) => (async () => {
+		let store = stores[i];
+		let res = await func();
+		store.set(res);
+		return res;
+	}));
+	return await Promise.all(funcs.map(func => func()));
 }
 export async function updateTodo() {
 	let res = await getAPI("users/self/todo");

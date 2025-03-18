@@ -1,4 +1,6 @@
 <script>
+	import { setToken } from "./main";
+
 	let { id, title, type } = $props();
 </script>
 
@@ -18,8 +20,10 @@
 					<input
 						type="text"
 						class="input"
-						placeholder=""
-						oninput={(input) => {localStorage.setItem("api-token", input.target.value)}}
+						value={localStorage.getItem("api-token") || "API token"}
+						oninput={(input) => {
+							setToken(input.target.value);
+						}}
 					/>
 					<p class="fieldset-label">
 						Generate one <a

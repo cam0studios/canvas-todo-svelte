@@ -18,8 +18,6 @@
 	import Grade from "./sections/Grade.svelte";
 	import Announcement from "./sections/Announcement.svelte";
 	import Inbox from "./sections/Inbox.svelte";
-
-	updateStores();
 </script>
 
 <div class="section" id={type}>
