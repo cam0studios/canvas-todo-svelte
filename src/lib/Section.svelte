@@ -7,42 +7,66 @@
 
 	/** @type {SectionProperties}*/
 	let { type, name } = $props();
-	import { getSectionData } from "./main";
+	import {
+		updateStores,
+		todoStore,
+		gradeStore,
+		announcementStore,
+		inboxStore,
+	} from "./main";
 	import Todo from "./sections/Todo.svelte";
 	import Grade from "./sections/Grade.svelte";
 	import Announcement from "./sections/Announcement.svelte";
 	import Inbox from "./sections/Inbox.svelte";
+
+	updateStores();
 </script>
 
 <div class="section" id={type}>
 	<h1>{name}</h1>
-	{#await getSectionData(type)}
-		<p class="loading">Loading...</p>
-	{:then data}
-		{#if data.type == "error"}
-			<p class="error">{data.message}</p>
-		{:else if type == "todo"}
-			{#each data as element}
+	{#if type == "todo"}
+		{#if $todoStore == null}
+			<p class="loading">Loading...</p>
+		{:else if $todoStore?.error}
+			<p class="error">{$todoStore.error}</p>
+		{:else}
+			{#each $todoStore as element}
 				<div class="sectionItem"><Todo {element} /></div>
 			{/each}
-		{:else if type == "grades"}
-			{#each data as element}
+		{/if}
+	{:else if type == "grades"}
+		{#if $gradeStore == null}
+			<p class="loading">Loading...</p>
+		{:else if $gradeStore?.error}
+			<p class="error">{$todoStore.error}</p>
+		{:else}
+			{#each $gradeStore as element}
 				<div class="sectionItem"><Grade {element} /></div>
 			{/each}
-		{:else if type == "announcements"}
-			{#each data as element}
+		{/if}
+	{:else if type == "announcements"}
+		{#if $announcementStore == null}
+			<p class="loading">Loading...</p>
+		{:else if $announcementStore?.error}
+			<p class="error">{$todoStore.error}</p>
+		{:else}
+			{#each $announcementStore as element}
 				<div class="sectionItem"><Announcement {element} /></div>
 			{/each}
-		{:else if type == "inbox"}
-			{#each data as element}
+		{/if}
+	{:else if type == "inbox"}
+		{#if $inboxStore == null}
+			<p class="loading">Loading...</p>
+		{:else if $inboxStore?.error}
+			<p class="error">{$todoStore.error}</p>
+		{:else}
+			{#each $inboxStore as element}
 				<div class="sectionItem"><Inbox {element} /></div>
 			{/each}
-		{:else}
-			<p>Section not found</p>
 		{/if}
-	{:catch error}
-		<p>Error: {error}</p>
-	{/await}
+	{:else}
+		<p>Section not found</p>
+	{/if}
 </div>
 
 <style>
