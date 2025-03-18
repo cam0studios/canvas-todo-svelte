@@ -6,24 +6,18 @@
 
 <Sidebar />
 <div id="content">
-	<Section api="users/self/todo" type="todo" name="To-Do"></Section>
+	<Section type="todo" name="To-Do"></Section>
 	<Section
-		api="users/self/courses"
 		type="grades"
 		name="Grades"
-		options="enrollment_state=active&per_page=100&include%5B%5D=total_scores&include%5B%5D=current_grading_period_scores&include%5B%5D=grading_periods"
 	></Section>
 	<Section
-		api="users/self/courses"
 		type="announcements"
 		name="Announcements"
-		options="enrollment_state=active&per_page=100"
 	></Section>
 	<Section
-		api="conversations"
 		type="inbox"
 		name="Inbox"
-		options="enrollment_state=active&per_page=100"
 	></Section>
 	<Popup id="settings" title="Settings" type="settings"/>
 </div>

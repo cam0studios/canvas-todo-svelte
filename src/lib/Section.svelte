@@ -1,15 +1,13 @@
 <script>
 	/**
 	 * @typedef {Object} SectionProperties
-	 * @property {String} api Path of API Request
 	 * @property {String} type Type of section ("Todo", "Calendar", "Grades", etc.)
 	 * @property {String} name Title of section
-	 * @property {String} [options=""] Options for API Request
 	 */
 
 	/** @type {SectionProperties}*/
-	let { api, type, name, options = "" } = $props();
-	import { getAPI } from "./main";
+	let { type, name } = $props();
+	import { getSectionData } from "./main";
 	import Todo from "./sections/Todo.svelte";
 	import Grade from "./sections/Grade.svelte";
 	import Announcement from "./sections/Announcement.svelte";
@@ -18,35 +16,23 @@
 
 <div class="section" id={type}>
 	<h1>{name}</h1>
-	{#await getAPI(api, options)}
+	{#await getSectionData(type)}
 		<p class="loading">Loading...</p>
 	{:then data}
-		{#if data?.errors?.length > 0}
-			<p class="error">
-				{data.errors.map((error) => error.message).join("<br>")}
-			</p>
+		{#if data.type == "error"}
+			<p class="error">{data.message}</p>
 		{:else if type == "todo"}
-			{#each data.sort((a, b) => new Date(a.assignment.due_at).getTime() - new Date(b.assignment.due_at).getTime()) as element}
+			{#each data as element}
 				<div class="sectionItem"><Todo {element} /></div>
 			{/each}
 		{:else if type == "grades"}
-			{#each data
-				.map( (course) => ({ course, score: course.enrollments[0].current_period_computed_current_score }), )
-				.map( (course) => ({ course: course.course, score: typeof course.score == "number" ? course.score : -1 }), )
-				.sort((a, b) => b.score - a.score)
-				.map((data) => data.course) as element}
+			{#each data as element}
 				<div class="sectionItem"><Grade {element} /></div>
 			{/each}
 		{:else if type == "announcements"}
-			{#await getAPI("announcements", "per_page=20&" + data
-						.map((course) => `context_codes[]=course_${course.id}`)
-						.join("&"))}
-				<p class="loading">Loading...</p>
-			{:then announcements}
-				{#each announcements as element}
-					<div class="sectionItem"><Announcement {element} /></div>
-				{/each}
-			{/await}
+			{#each data as element}
+				<div class="sectionItem"><Announcement {element} /></div>
+			{/each}
 		{:else if type == "inbox"}
 			{#each data as element}
 				<div class="sectionItem"><Inbox {element} /></div>
