@@ -3,12 +3,8 @@
 
 	let { element } = $props();
 	if (logs.todo) {
-		if (logs.alert) {
-			alert("todo\n" + JSON.stringify(element));
-		} else {
-			console.log("todo");
-			console.log(element);
-		}
+		console.log("todo");
+		console.log(element);
 	}
 	let data = {
 		due: new Date(element.assignment.due_at),

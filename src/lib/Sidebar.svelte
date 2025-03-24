@@ -20,20 +20,9 @@
 			iconType: "icon",
 		},
 		{
-			hover: "Times",
-			click: async () => {
-				await highTimeSheet.updateDay();
-				let middlePeriod = middleTimeSheet.current;
-				let highPeriod = highTimeSheet.current;
-				if (logs.alert) {
-					alert("middlePeriod\n" + JSON.stringify(middlePeriod));
-					alert("highPeriod\n" + JSON.stringify(highPeriod));
-				} else {
-					console.log("middlePeriod");
-					console.log(middlePeriod);
-					console.log("highPeriod");
-					console.log(highPeriod);
-				}
+			hover: "$timeLeft left in $period",
+			click: () => {
+				document.querySelector("#times").showModal();
 			},
 			icon: "nf nf-fa-clock",
 			iconType: "icon",
