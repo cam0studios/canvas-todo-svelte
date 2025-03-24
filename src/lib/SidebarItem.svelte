@@ -1,4 +1,6 @@
 <script>
+    import { currentPeriodStore, timeLeftStore } from './main';
+
 	let { hover, click, url, icon, iconType } = $props();
 </script>
 
@@ -21,7 +23,7 @@
 		</button>
 	{/if}
 	<p>
-		{hover}
+		{hover.replaceAll("$timeLeft", $timeLeftStore).replaceAll("$period", $currentPeriodStore.name)}
 	</p>
 </div>
 

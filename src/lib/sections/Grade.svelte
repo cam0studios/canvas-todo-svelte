@@ -3,12 +3,8 @@
 
 	let { element } = $props();
 	if (logs.grade) {
-		if (logs.alert) {
-			alert("grade\n" + JSON.stringify(element));
-		} else {
 			console.log("grade");
 			console.log(element);
-		}
 	}
 	let data = {
 		grade: element.enrollments[0].current_period_computed_current_score,

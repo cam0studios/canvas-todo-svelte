@@ -3,12 +3,8 @@
 
 	let { element } = $props();
 	if (logs.announcement) {
-		if (logs.alert) {
-			alert("announcement\n" + JSON.stringify(element));
-		} else {
 			console.log("announcement");
 			console.log(element);
-		}
 	}
 	let data = {
 		url: element.html_url,

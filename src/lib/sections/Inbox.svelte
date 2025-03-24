@@ -3,12 +3,8 @@
 
 	let { element } = $props();
 	if (logs.inbox) {
-		if (logs.alert) {
-			alert("inbox\n" + JSON.stringify(element));
-		} else {
 			console.log("inbox");
 			console.log(element);
-		}
 	}
 	let data = {
 		title: element.subject,
