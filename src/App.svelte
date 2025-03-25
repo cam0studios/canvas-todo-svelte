@@ -62,6 +62,26 @@
 
 {#snippet middle()}
 	<fieldset class="fieldset">
+		<legend class="fieldset-legend">Schedule</legend>
+		<select
+			class="select"
+			oninput={(input) => {
+				middleTimeSheet.schedule = input.target.value;
+			}}
+		>
+			<option value={0} selected={middleTimeSheet.schedule == 0}
+				>Normal</option
+			>
+			<option value={1} selected={middleTimeSheet.schedule == 1}
+				>Eagle Time</option
+			>
+			<option value={2} selected={middleTimeSheet.schedule == 2}
+				>Half Day</option
+			>
+			<option value={3} selected={middleTimeSheet.schedule == 3}
+				>2 Hour Delay</option
+			>
+		</select>
 		<legend class="fieldset-legend">Grade</legend>
 		<select
 			class="select"
@@ -69,15 +89,35 @@
 				middleTimeSheet.grade = input.target.value;
 			}}
 		>
-			<option value={0}>6th</option>
-			<option value={1}>7th</option>
-			<option value={2}>8th</option>
+			<option value={0} selected={middleTimeSheet.grade == 0}>6th</option>
+			<option value={1} selected={middleTimeSheet.grade == 1}>7th</option>
+			<option value={2} selected={middleTimeSheet.grade == 2}>8th</option>
 		</select>
 	</fieldset>
 {/snippet}
 
 {#snippet high()}
 	<fieldset class="fieldset">
+		<legend class="fieldset-legend">Schedule</legend>
+		<select
+			class="select"
+			oninput={(input) => {
+				highTimeSheet.schedule = input.target.value;
+			}}
+		>
+			<option value={0} selected={highTimeSheet.schedule == 0}
+				>Normal</option
+			>
+			<option value={1} selected={highTimeSheet.schedule == 1}
+				>Lions' Time</option
+			>
+			<option value={2} selected={highTimeSheet.schedule == 2}
+				>Half Day</option
+			>
+			<option value={3} selected={highTimeSheet.schedule == 3}
+				>2 Hour Delay</option
+			>
+		</select>
 		<legend class="fieldset-legend">Day</legend>
 		<select
 			class="select"
