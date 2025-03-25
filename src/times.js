@@ -58,7 +58,7 @@ export class TimeSheet {
 	}
 }
 
-export function createMiddleTimeSheet(schedules = [{ periods: [{ id: 0, times: "12:00-12:00" }], lunchStart: 0, lunchEnd: 0, lunches: [0] }]) {
+export function createMiddleTimeSheet(schedules = [{ periods: [{ id: 0, times: "12:00-12:00" }], lunchStart: 0, lunchEnd: 0, lunches: [0], replace: [{ from: -1, to: "" }] }]) {
 	var fixedSchedules = [];
 	for (let schedule of schedules) {
 		var grades = [];
@@ -68,15 +68,19 @@ export function createMiddleTimeSheet(schedules = [{ periods: [{ id: 0, times: "
 			let i = 0;
 			while (i < fixedPeriods.length) {
 				let period = fixedPeriods[i];
+				let periodName = period.id.toString();
+				if (schedule.replace.map(e => e.from).includes(period.id)) {
+					periodName = schedule.replace.find(e => e.from == period.id).to;
+				}
 				if (period.id < schedule.lunchStart || period.id > schedule.lunchEnd) {
-					grade.push({ name: "" + period.id, start: period.start, end: period.end });
+					grade.push({ name: periodName, start: period.start, end: period.end });
 					i++;
 				} else {
 					if (period.id == lunch) {
 						grade.push({ name: "Lunch", start: period.start, end: period.end });
 						i++;
 					} else {
-						grade.push({ name: period.id + "-" + fixedPeriods[i + 1].id, start: period.start, end: fixedPeriods[i + 1].end });
+						grade.push({ name: periodName + "-" + fixedPeriods[i + 1].id, start: period.start, end: fixedPeriods[i + 1].end });
 						i += 2;
 					}
 				}
@@ -105,7 +109,7 @@ export function createMiddleTimeSheet(schedules = [{ periods: [{ id: 0, times: "
 	};
 }
 
-export function createHighTimeSheet(schedules = [{ periods: [{ id: 0, times: "12:00-12:00" }], lunches: [{ id: "A", times: "12:00-12:00" }] }]) {
+export function createHighTimeSheet(schedules = [{ periods: [{ id: "0", times: "12:00-12:00" }], lunches: [{ id: "A", times: "12:00-12:00" }] }]) {
 	var fixedSchedules = [];
 	for (let schedule of schedules) {
 		var lunchSchedules = [];
@@ -116,18 +120,21 @@ export function createHighTimeSheet(schedules = [{ periods: [{ id: 0, times: "12
 			let i = 0;
 			for (let period of fixedPeriods) {
 				if (period.end <= lunch.start || period.start >= lunch.end) {
-					lunchSchedule.push({ name: (i + 1).toString(), start: period.start, end: period.end });
+					lunchSchedule.push({ name: period.id, start: period.start, end: period.end });
 					i++;
 				} else {
 					if (period.start < lunch.start) {
-						lunchSchedule.push({ name: (i + 1).toString(), start: period.start, end: lunch.start });
+						lunchSchedule.push({ name: period.id, start: period.start, end: lunch.start });
 					}
 					lunchSchedule.push({ name: lunch.id + " Lunch", start: lunch.start, end: lunch.end });
 					if (period.end > lunch.end) {
-						lunchSchedule.push({ name: (i + 1).toString(), start: lunch.end, end: period.end });
+						lunchSchedule.push({ name: period.id, start: lunch.end, end: period.end });
 					}
 					i++;
 				}
+			}
+			if (fixedPeriods[fixedPeriods.length - 1].end <= lunch.start) {
+				lunchSchedule.push({ name: lunch.id + " Lunch", start: lunch.start, end: lunch.end });
 			}
 			lunchSchedules.push(lunchSchedule);
 		}
@@ -197,22 +204,104 @@ export var middleTimeSheet = createMiddleTimeSheet([
 			{ id: 8, times: "12:55-1:27" },
 			{ id: 9, times: "1:30-2:20" },
 			{ id: 10, times: "2:23-3:15" }
-		], lunchStart: 4, lunchEnd: 8, lunches: [4, 6, 8]
-	}
+		], lunchStart: 4, lunchEnd: 8, lunches: [4, 6, 8], replace: []
+	}, {
+		periods: [
+			{ id: -1, times: "8:25-9:18" },
+			{ id: 1, times: "9:21-10:04" },
+			{ id: 2, times: "10:07-10:50" },
+			{ id: 3, times: "10:53-11:36" },
+			{ id: 4, times: "11:39-12:09" },
+			{ id: 5, times: "12:12-12:22" },
+			{ id: 6, times: "12:25-12:55" },
+			{ id: 7, times: "12:58-1:08" },
+			{ id: 8, times: "1:11-1:41" },
+			{ id: 9, times: "1:44-2:27" },
+			{ id: 10, times: "2:30-3:15" }
+		], lunchStart: 4, lunchEnd: 8, lunches: [4, 6, 8], replace: [{ from: -1, to: "Eagle Time" }]
+	}, {
+		periods: [
+			{ id: 1, times: "8:25-9:22" },
+			{ id: 2, times: "9:25-10:15" },
+			{ id: 3, times: "10:18-11:08" },
+			{ id: 4, times: "11:11-11:41" },
+			{ id: 5, times: "11:44-12:01" },
+			{ id: 6, times: "12:04-12:34" },
+			{ id: 7, times: "12:37-12:52" },
+			{ id: 8, times: "12:55-1:27" },
+			{ id: 9, times: "1:30-2:20" },
+			{ id: 10, times: "2:23-3:15" }
+		], lunchStart: 4, lunchEnd: 8, lunches: [4, 6, 8], replace: []
+	}, {
+		periods: [
+			{ id: 1, times: "8:25-9:22" },
+			{ id: 2, times: "9:25-10:15" },
+			{ id: 3, times: "10:18-11:08" },
+			{ id: 4, times: "11:11-11:41" },
+			{ id: 5, times: "11:44-12:01" },
+			{ id: 6, times: "12:04-12:34" },
+			{ id: 7, times: "12:37-12:52" },
+			{ id: 8, times: "12:55-1:27" },
+			{ id: 9, times: "1:30-2:20" },
+			{ id: 10, times: "2:23-3:15" }
+		], lunchStart: 4, lunchEnd: 8, lunches: [4, 6, 8], replace: []
+	},
 ]);
 
-export var highTimeSheet = createHighTimeSheet([{
-	periods: [
-		{ id: 1, times: "7:50-8:45" },
-		{ id: 2, times: "8:50-9:40" },
-		{ id: 3, times: "9:45-10:40" },
-		{ id: 4, times: "10:45-12:45" },
-		{ id: 5, times: "12:50-1:40" },
-		{ id: 6, times: "1:45-2:35" }
-	], lunches: [
-		{ id: "A", times: "10:45-11:15" },
-		{ id: "B", times: "11:15-11:45" },
-		{ id: "C", times: "11:45-12:15" },
-		{ id: "D", times: "12:15-12:45" }
-	]
-}]);
+export var highTimeSheet = createHighTimeSheet([
+	{
+		periods: [
+			{ id: "1", times: "7:50-8:45" },
+			{ id: "2", times: "8:50-9:40" },
+			{ id: "3", times: "9:45-10:40" },
+			{ id: "4", times: "10:45-12:45" },
+			{ id: "5", times: "12:50-1:40" },
+			{ id: "6", times: "1:45-2:35" }
+		], lunches: [
+			{ id: "A", times: "10:45-11:15" },
+			{ id: "B", times: "11:15-11:45" },
+			{ id: "C", times: "11:45-12:15" },
+			{ id: "D", times: "12:15-12:45" }
+		]
+	}, {
+		periods: [
+			{ id: "1", times: "7:50-8:35" },
+			{ id: "2", times: "8:40-9:25" },
+			{ id: "Lions' Time", times: "9:30-9:55" },
+			{ id: "3", times: "10:00-10:50" },
+			{ id: "4", times: "10:55-12:55" },
+			{ id: "5", times: "1:00-1:45" },
+			{ id: "6", times: "1:50-2:35" }
+		], lunches: [
+			{ id: "A", times: "10:55-11:25" },
+			{ id: "B", times: "11:25-11:55" },
+			{ id: "C", times: "11:55-12:25" },
+			{ id: "D", times: "12:25-12:55" }
+		]
+	}, {
+		periods: [
+			{ id: "1", times: "7:50-8:20" },
+			{ id: "2", times: "8:25-8:55" },
+			{ id: "3", times: "9:00-9:35" },
+			{ id: "4", times: "9:40-10:10" },
+			{ id: "5", times: "10:15-10:45" },
+			{ id: "6", times: "10:50-11:20" }
+		], lunches: [
+			{ id: "Grab n Go", times: "11:20-11:35" }
+		]
+	}, {
+		periods: [
+			{ id: "1", times: "9:50-10:20" },
+			{ id: "2", times: "10:25-10:55" },
+			{ id: "3", times: "11:00-11:30" },
+			{ id: "4", times: "11:35-1:35" },
+			{ id: "5", times: "1:40-2:05" },
+			{ id: "6", times: "2:10-2:35" }
+		], lunches: [
+			{ id: "A", times: "11:35-12:05" },
+			{ id: "B", times: "12:05-12:35" },
+			{ id: "C", times: "12:35-1:05" },
+			{ id: "D", times: "1:05-1:35" }
+		]
+	}
+]);
