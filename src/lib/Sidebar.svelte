@@ -1,8 +1,8 @@
 <script>
 	import SidebarItem from "./SidebarItem.svelte";
 	import { middleTimeSheet, highTimeSheet } from "../times";
-    import { logs } from "./main";
-    import Popup from "./Popup.svelte";
+	import { currentSectionStore, logs } from "./main";
+	import Popup from "./Popup.svelte";
 
 	const sidebarItems = [
 		{
@@ -14,6 +14,7 @@
 		{
 			hover: "Settings",
 			click: () => {
+				// @ts-ignore
 				document.querySelector("#settings").showModal();
 			},
 			icon: "nf nf-fa-gear",
@@ -22,17 +23,57 @@
 		{
 			hover: "$timeLeft left in $period",
 			click: () => {
+				// @ts-ignore
 				document.querySelector("#times").showModal();
 			},
 			icon: "nf nf-fa-clock",
 			iconType: "icon",
 		},
 	];
+	const dockItems = [
+		...[
+			{
+				hover: "Todo",
+				section: "todo",
+				icon: "nf nf-fa-list",
+				iconType: "icon",
+			},
+			{
+				hover: "Grades",
+				section: "grades",
+				icon: "nf nf-md-file_certificate",
+				iconType: "icon",
+			},
+			{
+				hover: "Inbox",
+				section: "inbox",
+				icon: "nf nf-fa-inbox",
+				iconType: "icon",
+			},
+		],
+		...sidebarItems.filter((e) => !("url" in e))
+	];
 </script>
 
 <div id="sidebar">
 	{#each sidebarItems as { hover, url, click, icon, iconType }}
 		<SidebarItem {hover} {url} {click} {icon} {iconType} />
+	{/each}
+</div>
+<div class="dock dock-sm">
+	{#each dockItems as { hover, url, click, icon, iconType, section }}
+		<SidebarItem
+			{hover}
+			{url}
+			click={section
+				? () => {
+						currentSectionStore.set(section);
+					}
+				: click}
+			{icon}
+			{iconType}
+			selected={$currentSectionStore == section}
+		/>
 	{/each}
 </div>
 
@@ -47,5 +88,19 @@
 		z-index: 3;
 		box-sizing: border-box;
 		padding: 0;
+		@media only screen and (max-width: 600px) {
+			display: none;
+		}
+	}
+
+	.dock {
+		display: none;
+		color: white;
+		background-color: rgb(57, 75, 88);
+		z-index: 1000;
+		padding: 0;
+		@media only screen and (max-width: 600px) {
+			display: flex !important;
+		}
 	}
 </style>

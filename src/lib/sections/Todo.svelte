@@ -6,25 +6,13 @@
 		console.log("todo");
 		console.log(element);
 	}
-	let data = {
-		due: new Date(element.assignment.due_at),
-		name: element.assignment.name,
-		className: element.context_name,
-		url: element.html_url,
-	};
-	data.dueType = "";
-	if (data.due.getTime() < new Date().getTime()) {
-		data.dueType = "late";
-	} else if (data.due.getDate() == new Date().getDate()) {
-		data.dueType = "today";
-	}
 </script>
 
-<a class="todo" href={data.url} target="_blank">
-	<h3>{data.name}</h3>
-	<p>{data.className}</p>
-	<p class={data.dueType}>
-		{data.due.toLocaleString(undefined, {
+<a class="todo" href={element.url} target="_blank">
+	<h3>{element.name}</h3>
+	<p>{element.className}</p>
+	<p class={element.dueType}>
+		{element.due.toLocaleString(undefined, {
 			timeStyle: "short",
 			dateStyle: "full",
 		})}
@@ -34,6 +22,7 @@
 <style>
 	.todo {
 		all: unset;
+		max-width: 100%;
 		& h3 {
 			margin: 0;
 			margin-bottom: 5px;

@@ -1,7 +1,7 @@
 <script>
-    import { currentPeriodStore, timeLeftStore } from './main';
+	import { currentPeriodStore, isMobile, timeLeftStore } from "./main";
 
-	let { hover, click, url, icon, iconType } = $props();
+	let { hover, click, url, icon, iconType, selected = false } = $props();
 </script>
 
 {#snippet item(icon, iconType)}
@@ -10,9 +10,16 @@
 	{:else}
 		<i class={icon}></i>
 	{/if}
+	{#if $isMobile}
+		<p class="dock-label">
+			{hover
+				.replaceAll("$timeLeft", $timeLeftStore)
+				.replaceAll("$period", $currentPeriodStore.name)}
+		</p>
+	{/if}
 {/snippet}
 
-<div class="sidebarItem" data-hover={hover}>
+<div class="sidebarItem {selected ? 'dock-active' : ''}" data-hover={hover}>
 	{#if url}
 		<a href={url} target="_blank">
 			{@render item(icon, iconType)}
@@ -22,9 +29,11 @@
 			{@render item(icon, iconType)}
 		</button>
 	{/if}
-	<p>
-		{hover.replaceAll("$timeLeft", $timeLeftStore).replaceAll("$period", $currentPeriodStore.name)}
-	</p>
+		<p>
+			{hover
+				.replaceAll("$timeLeft", $timeLeftStore)
+				.replaceAll("$period", $currentPeriodStore.name)}
+		</p>
 </div>
 
 <style>
@@ -49,6 +58,12 @@
 				opacity: 1;
 			}
 		}
+		&.dock-active {
+			background-color: rgba(0, 0, 0, 0.1);
+		}
+		& .dock-label {
+			font-size: 12px !important;
+		}
 		&:first-of-type {
 			height: 85px;
 		}
@@ -58,6 +73,10 @@
 			background-color: transparent;
 			width: 100%;
 			padding: 0;
+			@media only screen and (max-width: 600px) {
+				margin: 0;
+				height: 50px !important;
+			}
 		}
 		& i {
 			color: white;
@@ -67,6 +86,10 @@
 		& img {
 			height: 40px;
 			width: max-content;
+			@media only screen and (max-width: 600px) {
+				height: 30px;
+				width: auto;
+			}
 		}
 		& > p {
 			position: absolute;
@@ -81,6 +104,17 @@
 			color: white;
 			font-size: 15px;
 			opacity: 0;
+
+			@media only screen and (max-width: 600px) {
+				display: none;
+			}
+		}
+
+		@media only screen and (max-width: 600px) {
+			margin: 0;
+			height: 100% !important;
+			width: 70px;
+			padding: 0;
 		}
 	}
 </style>

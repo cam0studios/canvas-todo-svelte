@@ -11,16 +11,24 @@
 		updateStores,
 		todoStore,
 		gradeStore,
-		announcementStore,
 		inboxStore,
+		currentSectionStore,
 	} from "./main";
 	import Todo from "./sections/Todo.svelte";
 	import Grade from "./sections/Grade.svelte";
-	import Announcement from "./sections/Announcement.svelte";
 	import Inbox from "./sections/Inbox.svelte";
+
+	let click = (ev) => {
+		ev.target.firstElementChild?.click();
+	};
 </script>
 
-<div class="section" id={type}>
+<div
+	class="section {$currentSectionStore == type
+		? 'active'
+		: 'inactive'}"
+	id={type}
+>
 	<h1>{name}</h1>
 	{#if type == "todo"}
 		{#if $todoStore == null}
@@ -29,7 +37,13 @@
 			<p class="error">{$todoStore.error}</p>
 		{:else}
 			{#each $todoStore as element}
-				<div class="sectionItem"><Todo {element} /></div>
+				{#if element == "loading"}
+					<p class="loading">Loading...</p>
+				{:else}
+					<div class="sectionItem" onclick={click}>
+						<Todo {element} />
+					</div>
+				{/if}
 			{/each}
 		{/if}
 	{:else if type == "grades"}
@@ -39,17 +53,13 @@
 			<p class="error">{$todoStore.error}</p>
 		{:else}
 			{#each $gradeStore as element}
-				<div class="sectionItem"><Grade {element} /></div>
-			{/each}
-		{/if}
-	{:else if type == "announcements"}
-		{#if $announcementStore == null}
-			<p class="loading">Loading...</p>
-		{:else if $announcementStore?.error}
-			<p class="error">{$todoStore.error}</p>
-		{:else}
-			{#each $announcementStore as element}
-				<div class="sectionItem"><Announcement {element} /></div>
+				{#if element == "loading"}
+					<p class="loading">Loading...</p>
+				{:else}
+					<div class="sectionItem" onclick={click}>
+						<Grade {element} />
+					</div>
+				{/if}
 			{/each}
 		{/if}
 	{:else if type == "inbox"}
@@ -58,8 +68,15 @@
 		{:else if $inboxStore?.error}
 			<p class="error">{$todoStore.error}</p>
 		{:else}
-			{#each $inboxStore as element}
-				<div class="sectionItem"><Inbox {element} /></div>
+			{#each $inboxStore.filter((e) => e == "loading")}
+				<p class="loading">Loading...</p>
+			{/each}
+			{#each $inboxStore
+				.filter((e) => e != "loading")
+				.sort((a, b) => b.at.getTime() - a.at.getTime()) as element}
+				<div class="sectionItem" onclick={click}>
+					<Inbox {element} />
+				</div>
 			{/each}
 		{/if}
 	{:else}
@@ -72,17 +89,14 @@
 		left: 0;
 	}
 	#grades {
-		left: 25%;
-	}
-	#announcements {
-		left: 50%;
+		left: 33%;
 	}
 	#inbox {
-		left: 75%;
+		left: 66%;
 	}
 	.section {
-		width: 25%;
-		height: 100vh;
+		width: 33%;
+		height: 100%;
 		background-color: transparent;
 		position: absolute;
 		margin: 0;
@@ -100,6 +114,14 @@
 			margin: 10px;
 			margin-bottom: 5px;
 		}
+		@media only screen and (max-width: 600px) {
+			display: none;
+			left: 0 !important;
+			width: 100%;
+			&.active {
+				display: flex;
+			}
+		}
 		/* &:nth-of-type(2),
 		&:nth-of-type(4),
 		&:nth-of-type(6),
@@ -109,7 +131,7 @@
 	}
 	.sectionItem {
 		width: calc(100% - 10px);
-		max-width: 300px;
+		max-width: 350px;
 		box-sizing: border-box;
 		border: 1px solid black;
 		border-radius: 5px;
@@ -131,7 +153,11 @@
 		font-weight: 500;
 		padding: 20px;
 	}
-	.loading {
+	.loading:nth-of-type(1) {
 		padding: 20px;
+		display: unset;
+	}
+	.loading {
+		display: none;
 	}
 </style>

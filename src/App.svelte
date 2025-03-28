@@ -10,7 +10,6 @@
 <div id="content">
 	<Section type="todo" name="To-Do"></Section>
 	<Section type="grades" name="Grades"></Section>
-	<Section type="announcements" name="Announcements"></Section>
 	<Section type="inbox" name="Inbox"></Section>
 	<Popup id="settings" title="Settings">
 		{#snippet content()}
@@ -19,7 +18,8 @@
 				<input
 					type="text"
 					class="input"
-					value={localStorage.getItem("api-token") || "API token"}
+					value={localStorage.getItem("api-token") || ""}
+					placeholder="API token"
 					oninput={(input) => {
 						setToken(input.target.value);
 					}}
@@ -194,6 +194,10 @@
 		z-index: 2;
 		box-sizing: border-box;
 		padding: 0;
+		@media only screen and (max-width: 600px) {
+			width: 100%;
+			height: calc(100% - 56px) !important;
+		}
 	}
 	.table th {
 		padding-bottom: 5px;
