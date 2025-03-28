@@ -20,7 +20,7 @@ export class TimeSheet {
 	}
 	static get currentTime() {
 		let now = new Date();
-		return (now.getHours() + 3) * 60 + now.getMinutes() + now.getSeconds() / 60;
+		return now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
 	}
 	static getTimeFromString(time = "12:00") {
 		let hour = parseInt(time.split(":")[0]);
@@ -113,7 +113,7 @@ export function createHighTimeSheet(schedules = [{ periods: [{ id: "0", times: "
 	var fixedSchedules = [];
 	for (let schedule of schedules) {
 		var lunchSchedules = [];
-		var fixedPeriods = TimeSheet.getPeriodsFromStrings(schedule.periods);
+		var fixedPeriods = TimeSheet.getPeriodsFromStrings(schedule.periods.map((p, i) => ({ id: i, times: p.times }))).map(p => ({ start: p.start, end: p.end, id: schedule.periods[p.id].id }));
 		var fixedLunches = TimeSheet.getPeriodsFromStrings(schedule.lunches.map((l, i) => ({ id: i, times: l.times }))).map(l => ({ start: l.start, end: l.end, id: schedule.lunches[l.id].id }));
 		for (let lunch of fixedLunches) {
 			var lunchSchedule = [];

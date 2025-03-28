@@ -6,45 +6,13 @@
 			console.log("grade");
 			console.log(element);
 	}
-	let data = {
-		grade: element.enrollments[0].current_period_computed_current_score,
-		// grade: Math.round(Math.random() * 40 + 60),
-		name: element.name,
-		url: "https://hcpss.instructure.com/courses/" + element.id,
-		gradeText: "",
-		gradeType: "",
-	};
-	if (typeof data.grade != "number") {
-		data.gradeText = "N/A";
-	} else {
-		data.gradeType = getGradeColor(data.grade);
-		data.gradeText = data.grade + "%";
-	}
-	function getGradeColor(grade) {
-		if (grade > 94.5) {
-			return "reallygood";
-		} else if (grade >= 89.5) {
-			return "good";
-		} else if (grade >= 79.5) {
-			return "mid";
-		} else if (grade >= 69.5) {
-			return "bad";
-		} else {
-			return "reallybad";
-		}
-	}
 </script>
 
-<a class="grade" href={data.url + "/grades"} target="_blank">
-	<h3>{data.name}</h3>
-	<p class={data.gradeType}>{data.gradeText}</p>
-	{#if typeof data.grade == "number"}
-		<div class="outside">
-			<div
-				class="inside {data.gradeType}"
-				style="width:{data.grade}%"
-			></div>
-		</div>
+<a class="grade" href={element.url + "/grades"} target="_blank">
+	<h3>{element.name}</h3>
+	<p class={element.gradeType}>{element.gradeText}</p>
+	{#if typeof element.grade == "number"}
+		<progress class="progress progress-primary {element.gradeType}" max="100" value={element.grade}></progress>
 	{/if}
 </a>
 
@@ -56,6 +24,8 @@
 		--bad: rgb(250, 120, 50);
 		--reallybad: rgb(200, 0, 0);
 		all: unset;
+		max-width: 100%;
+		padding-bottom: 0;
 		& h3 {
 			margin: 0;
 			margin-bottom: 5px;
@@ -84,34 +54,24 @@
 			color: var(--reallybad);
 		}
 
-		& .outside {
-			width: 100%;
-			height: 10px;
-			background-color: rgb(230, 230, 230);
-			border-radius: 10px;
-			margin-top: 5px;
-			display: block;
-			padding: 0;
+		progress {
+			margin-bottom: 0;
 		}
-		& .inside {
-			height: 10px;
-			margin: 0;
-			border-radius: 10px;
+
+		progress.reallygood {
+			color: var(--reallygood);
 		}
-		.inside.reallygood {
-			background-color: var(--reallygood);
+		progress.good {
+			color: var(--good);
 		}
-		.inside.good {
-			background-color: var(--good);
+		progress.mid {
+			color: var(--mid);
 		}
-		.inside.mid {
-			background-color: var(--mid);
+		progress.bad {
+			color: var(--bad);
 		}
-		.inside.bad {
-			background-color: var(--bad);
-		}
-		.inside.reallybad {
-			background-color: var(--reallybad);
+		progress.reallybad {
+			color: var(--reallybad);
 		}
 	}
 </style>

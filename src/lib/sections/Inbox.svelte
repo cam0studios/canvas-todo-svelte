@@ -1,41 +1,45 @@
 <script>
-    import { logs } from "../main";
+	import { getAPI, logs } from "../main";
 
 	let { element } = $props();
 	if (logs.inbox) {
-			console.log("inbox");
-			console.log(element);
-	}
-	let data = {
-		title: element.subject,
-		course: element.context_name,
-		postedAt: new Date(element.last_message_at),
-		shortMessage: element.last_message
-			.replaceAll(/<[^>]*>/gi, " ")
-			.replaceAll("&nbsp;", " ")
-			.replaceAll("&amp;", "&")
-			.replaceAll("↵", " ")
-			.trim(),
-	};
-	if (data.shortMessage.length > 150) {
-		data.shortMessage = data.shortMessage.substring(0, 150) + "...";
+		console.log(element.type);
+		console.log(element);
 	}
 </script>
 
-<button
-	class="inbox"
-	onclick={() => {
-		document.getElementById("dialog").showModal();
-	}}
->
-	<h3>{data.title}</h3>
-	<p>{data.course}</p>
-	<p>{data.shortMessage}</p>
-</button>
+{#snippet content()}
+	<h3>{element.title}</h3>
+	<p>{element.type == "inbox" ? "Inbox" : "Announcement"} - {element.from}</p>
+	<p>{element.at.toLocaleString(undefined, {
+		timeStyle: "short",
+		dateStyle: "full",
+	})}</p>
+	<p>{element.shortMessage}</p>
+{/snippet}
+
+{#if element.type == "inbox"}
+	<button
+		class="inbox"
+		onclick={async () => {
+			getAPI("inbox");
+		}}
+	>
+		{@render content()}
+	</button>
+{:else if element.type == "announcement"}
+	<a href={element.url} class="inbox" target="_blank">
+		{@render content()}
+	</a>
+{:else}
+	<p>Unknown type</p>
+{/if}
 
 <style>
 	.inbox {
 		all: unset;
+		max-width: 100%;
+		word-wrap: break-word;
 		& h3 {
 			margin: 0;
 			margin-bottom: 5px;
