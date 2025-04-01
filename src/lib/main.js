@@ -3,22 +3,20 @@ import { writable, get } from "svelte/store";
 import { highTimeSheet, middleTimeSheet, TimeSheet } from "../times";
 
 export var apiToken = localStorage.getItem("api-token") || "";
-export const apiURLs = ["https://hcpss.space/api/canvas/v1", "https://corsanywhere.vercel.app/hcpss.instructure.com/api/v1"];
+export const apiURLs = [
+	"https://hcpss.space/api/canvas/v1",
+	"https://corsanywhere.vercel.app/hcpss.instructure.com/api/v1",
+];
 export var workingURL = -1;
-
-export var logs = {
-	todo: false,
-	grade: false,
-	inbox: false,
-	fetch: false
-};
 
 export const todoStore = writable([]);
 export const gradeStore = writable([]);
 export const inboxStore = writable([]);
 
-export var timesSchool = writable(parseInt(localStorage.getItem("times-school")) || 0);
-timesSchool.subscribe(value => {
+export var timesSchool = writable(
+	parseInt(localStorage.getItem("times-school")) || 0
+);
+timesSchool.subscribe((value) => {
 	localStorage.setItem("times-school", value.toString());
 });
 
@@ -35,7 +33,7 @@ export async function updateStores() {
 		store.set([]);
 	}
 	let funcs = [updateTodo, updateGrades, updateAnnouncements, updateInbox];
-	funcs = funcs.map((func, i) => (async () => {
+	funcs = funcs.map((func, i) => async () => {
 		let store = stores[i];
 		let current = get(store);
 		current.push("loading");
@@ -52,13 +50,18 @@ export async function updateStores() {
 		}
 		store.set(current);
 		return res;
-	}));
-	return await Promise.all(funcs.map(func => func()));
+	});
+	return await Promise.all(funcs.map((func) => func()));
 }
 export async function updateTodo() {
 	let res = await getAPI("users/self/todo");
-	if (res?.errors?.length > 0) return { error: res.errors.map(e => e.message).join("<br>") };
-	res.sort((a, b) => new Date(a.assignment.due_at).getTime() - new Date(b.assignment.due_at).getTime());
+	if (res?.errors?.length > 0)
+		return { error: res.errors.map((e) => e.message).join("<br>") };
+	res.sort(
+		(a, b) =>
+			new Date(a.assignment.due_at).getTime() -
+			new Date(b.assignment.due_at).getTime()
+	);
 	let data = res.map((element) => {
 		let data = {
 			due: new Date(element.assignment.due_at),
@@ -77,11 +80,21 @@ export async function updateTodo() {
 	return data;
 }
 export async function updateGrades() {
-	let res = await getAPI("users/self/courses", "enrollment_state=active&per_page=100&include%5B%5D=total_scores&include%5B%5D=current_grading_period_scores&include%5B%5D=grading_periods");
-	if (res?.errors?.length > 0) return { error: res.errors.map(e => e.message).join("<br>") };
+	let res = await getAPI(
+		"users/self/courses",
+		"enrollment_state=active&per_page=100&include%5B%5D=total_scores&include%5B%5D=current_grading_period_scores&include%5B%5D=grading_periods"
+	);
+	if (res?.errors?.length > 0)
+		return { error: res.errors.map((e) => e.message).join("<br>") };
 	res = res
-		.map((course) => ({ course, score: course.enrollments[0].current_period_computed_current_score }),)
-		.map((course) => ({ course: course.course, score: typeof course.score == "number" ? course.score : -1 }),)
+		.map((course) => ({
+			course,
+			score: course.enrollments[0].current_period_computed_current_score,
+		}))
+		.map((course) => ({
+			course: course.course,
+			score: typeof course.score == "number" ? course.score : -1,
+		}))
 		.sort((a, b) => b.score - a.score)
 		.map((data) => data.course);
 	let data = res.map((element) => {
@@ -117,12 +130,19 @@ export async function updateGrades() {
 	return data;
 }
 export async function updateAnnouncements() {
-	let res = await getAPI("users/self/courses", "enrollment_state=active&per_page=20");
-	if (res?.errors?.length > 0) return { error: res.errors.map(e => e.message).join("<br>") };
-	let res2 = await getAPI("announcements", "per_page=20&" + res
-		.map((course) => `context_codes[]=course_${course.id}`)
-		.join("&"));
-	if (res2?.errors?.length > 0) return { error: res2.errors.map(e => e.message).join("<br>") };
+	let res = await getAPI(
+		"users/self/courses",
+		"enrollment_state=active&per_page=20"
+	);
+	if (res?.errors?.length > 0)
+		return { error: res.errors.map((e) => e.message).join("<br>") };
+	let res2 = await getAPI(
+		"announcements",
+		"per_page=20&" +
+			res.map((course) => `context_codes[]=course_${course.id}`).join("&")
+	);
+	if (res2?.errors?.length > 0)
+		return { error: res2.errors.map((e) => e.message).join("<br>") };
 	let data = res2.map((element) => {
 		let data = {
 			type: "announcement",
@@ -145,8 +165,8 @@ export async function updateAnnouncements() {
 				.replaceAll("&nbsp;", " ")
 				.replaceAll("&amp;", "&")
 				.replaceAll("↵", "\n")
-				.trim()
-		}
+				.trim(),
+		};
 		if (data.shortMessage.length > 150) {
 			data.shortMessage = data.shortMessage.substring(0, 150) + "...";
 		}
@@ -158,8 +178,12 @@ export async function updateAnnouncements() {
 	return data;
 }
 export async function updateInbox() {
-	let res = await getAPI("conversations", "enrollment_state=active&per_page=20");
-	if (res?.errors?.length > 0) return { error: res.errors.map(e => e.message).join("<br>") };
+	let res = await getAPI(
+		"conversations",
+		"enrollment_state=active&per_page=20"
+	);
+	if (res?.errors?.length > 0)
+		return { error: res.errors.map((e) => e.message).join("<br>") };
 	let data = res.map((element) => {
 		let data = {
 			type: "inbox",
@@ -197,13 +221,10 @@ export async function getAPI(endpoint = "", options = "") {
 			method: "GET",
 			headers: {
 				Authorization: `Bearer ${apiToken}`,
-				origin: location.origin
+				origin: location.origin,
 			},
 		});
 		let json = await res.json();
-		if (logs.fetch) {
-			console.log(json);
-		}
 		return json;
 	} catch (err) {
 		console.error(err);
@@ -219,7 +240,7 @@ async function checkURLs(n = 0) {
 		return false;
 	}
 	if (workingURL == -2 && n == 0) {
-		await new Promise(resolve => setTimeout(resolve, 1000));
+		await new Promise((resolve) => setTimeout(resolve, 1000));
 		return await checkURLs();
 	}
 	if (workingURL == -3) {
@@ -231,7 +252,7 @@ async function checkURLs(n = 0) {
 			method: "GET",
 			headers: {
 				Authorization: `Bearer ${apiToken}`,
-				origin: location.origin
+				origin: location.origin,
 			},
 		});
 		if (res.ok) {
@@ -251,13 +272,20 @@ export const currentPeriodStore = writable({ name: "", start: 0, end: 0 });
 highTimeSheet.updateDay();
 
 setInterval(() => {
-	let current = get(timesSchool) == 0 ? middleTimeSheet.current : highTimeSheet.current;
+	let current =
+		get(timesSchool) == 0 ? middleTimeSheet.current : highTimeSheet.current;
 	if (current == null) {
 		timeLeftStore.set("0:00");
 		currentPeriodStore.set({ name: "none", start: 0, end: 0 });
 		return;
 	}
-	timeLeftStore.set(TimeSheet.formatTime(current.timeLeft, { hour: current.timeLeft > 60, minute: true, second: true }));
+	timeLeftStore.set(
+		TimeSheet.formatTime(current.timeLeft, {
+			hour: current.timeLeft > 60,
+			minute: true,
+			second: true,
+		})
+	);
 	currentPeriodStore.set(current.period);
 }, 1000);
 
@@ -293,7 +321,6 @@ export const currentAnnouncementStore = writable({ title: "", message: "" });
 //     };
 //   });
 // }
-
 
 /*
 IGNORE ASSIGNMENT

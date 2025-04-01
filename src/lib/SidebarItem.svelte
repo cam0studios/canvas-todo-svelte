@@ -29,11 +29,11 @@
 			{@render item(icon, iconType)}
 		</button>
 	{/if}
-		<p>
-			{hover
-				.replaceAll("$timeLeft", $timeLeftStore)
-				.replaceAll("$period", $currentPeriodStore.name)}
-		</p>
+	<p>
+		{hover
+			.replaceAll("$timeLeft", $timeLeftStore)
+			.replaceAll("$period", $currentPeriodStore.name)}
+	</p>
 </div>
 
 <style>

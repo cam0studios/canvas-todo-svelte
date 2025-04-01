@@ -1,11 +1,5 @@
 <script>
-	import { logs } from "../main";
-
 	let { element } = $props();
-	if (logs.todo) {
-		console.log("todo");
-		console.log(element);
-	}
 </script>
 
 <a class="todo" href={element.url} target="_blank">
