@@ -1,5 +1,8 @@
 <script>
-	import { getAPI, logs } from "../main";
+    import { mount } from "svelte";
+	import { currentMessagesStore, currentAnnouncementStore, getAPI, logs } from "../main";
+    import Popup from "../Popup.svelte";
+    import { get } from "svelte/store";
 
 	let { element } = $props();
 	if (logs.inbox) {
@@ -22,15 +25,40 @@
 	<button
 		class="inbox"
 		onclick={async () => {
-			getAPI("inbox");
+		currentMessagesStore.set({ subject: `Loading "${element.title}"...`, messages: [] });
+			document.getElementById("view-messages").showModal();
+			getAPI(`conversations/${element.id}`)
+			.then(data => {
+				let messages = data.messages
+				.toReversed()
+				.map(message => {
+					return {
+						body: message.body.replaceAll("<br>", "\n")
+							.replaceAll("<br/>", "\n")
+							.replaceAll(/<[^>]*>/gi, " ")
+							.replaceAll("&nbsp;", " ")
+							.replaceAll("&amp;", "&")
+							.replaceAll("↵", "\n")
+							.trim(),
+						from: data.participants.find(e => e.id == message.author_id).name,
+						at: new Date(message.created_at),
+					};
+				});
+				currentMessagesStore.set({ subject: data.subject, messages });
+			});
 		}}
 	>
 		{@render content()}
 	</button>
 {:else if element.type == "announcement"}
-	<a href={element.url} class="inbox" target="_blank">
+	<!-- <a href={element.url} class="inbox" target="_blank"> -->
+	 <button class="inbox" onclick={() => {
+		currentAnnouncementStore.set({ title: element.title, message: element.message })
+		document.getElementById("view-announcement").showModal();;
+	 }}>
 		{@render content()}
-	</a>
+	</button>
+	<!-- </a> -->
 {:else}
 	<p>Unknown type</p>
 {/if}

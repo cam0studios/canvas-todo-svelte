@@ -43,11 +43,7 @@ export async function updateStores() {
 		let res = await func();
 		current = get(store);
 		if (res?.error) {
-			if (current?.error) {
-				current.error.push(...res.errors);
-			} else {
-				current = { error: [res.error] };
-			}
+			current = { error: res.error };
 		} else if (!current?.error) {
 			current.push(...res);
 			if (current.includes("loading")) {
@@ -127,7 +123,6 @@ export async function updateAnnouncements() {
 		.map((course) => `context_codes[]=course_${course.id}`)
 		.join("&"));
 	if (res2?.errors?.length > 0) return { error: res2.errors.map(e => e.message).join("<br>") };
-	console.log(res2);
 	let data = res2.map((element) => {
 		let data = {
 			type: "announcement",
@@ -140,7 +135,17 @@ export async function updateAnnouncements() {
 				.replaceAll("&nbsp;", " ")
 				.replaceAll("&amp;", "&")
 				.replaceAll("↵", " ")
+				.replaceAll("<br>", "\n")
+				.replaceAll("<br/>", "\n")
 				.trim(),
+			message: element.message
+				.replaceAll("<br>", "\n")
+				.replaceAll("<br/>", "\n")
+				.replaceAll(/<[^>]*>/gi, " ")
+				.replaceAll("&nbsp;", " ")
+				.replaceAll("&amp;", "&")
+				.replaceAll("↵", "\n")
+				.trim()
 		}
 		if (data.shortMessage.length > 150) {
 			data.shortMessage = data.shortMessage.substring(0, 150) + "...";
@@ -274,6 +279,9 @@ isMobile.subscribe((value) => {
 		currentSectionStore.set("none");
 	}
 });
+
+export const currentMessagesStore = writable({ subject: "", messages: [] });
+export const currentAnnouncementStore = writable({ title: "", message: "" });
 
 // export function responseToData(response) {
 //   // return response;

@@ -1,5 +1,13 @@
 <script>
-	let { id, title, content } = $props();
+	import { onMount } from "svelte";
+
+	let { id, title, content, show = false } = $props();
+	onMount(() => {
+		const dialog = document.getElementById(id);
+		if (show) {
+			dialog.showModal();
+		}
+	});
 </script>
 
 <dialog {id} class="modal">
@@ -11,7 +19,7 @@
 			>
 		</form>
 		<h3 class="text-lg font-bold">{title}</h3>
-		<div>
+		<div class="modal-content">
 			{@render content()}
 		</div>
 	</div>
@@ -21,4 +29,10 @@
 </dialog>
 
 <style>
+	.modal-content {
+		word-wrap: break-word;
+	}
+	.modal-box {
+		max-height: 90vh;
+	}
 </style>

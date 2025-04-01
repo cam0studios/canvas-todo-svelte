@@ -2,7 +2,7 @@
 	import Sidebar from "./lib/Sidebar.svelte";
 	import Section from "./lib/Section.svelte";
 	import Popup from "./lib/Popup.svelte";
-	import { setToken, timesSchool } from "./lib/main";
+	import { setToken, timesSchool, currentMessagesStore, currentAnnouncementStore } from "./lib/main";
 	import { highTimeSheet, middleTimeSheet } from "./times";
 </script>
 
@@ -56,6 +56,48 @@
 			{:else if $timesSchool == 1}
 				{@render high()}
 			{/if}
+		{/snippet}
+	</Popup>
+	<Popup id="view-messages" title={$currentMessagesStore.subject}>
+		{#snippet content()}
+			{#each $currentMessagesStore.messages as message}
+				<h2>{message.from} - {message.at.toLocaleString(undefined, {
+					timeStyle: "short",
+					dateStyle: "full",
+				})}</h2>
+				<div>
+					{#each message.body.split("\n") as line}
+						<p>{line}</p>
+					{/each}
+				</div>
+			{/each}
+			<style>
+				h2 {
+					margin-top: 10px;
+					font-weight: 600;
+				}
+				p {
+					padding-left: 10px;
+				}
+			</style>
+		{/snippet}
+	</Popup>
+	<Popup id="view-announcement" title={$currentAnnouncementStore.title}>
+		{#snippet content()}
+			<div>
+				{#each $currentAnnouncementStore.message.split("\n") as line}
+					<p>{line}</p>
+				{/each}
+			</div>
+			<style>
+				h2 {
+					margin-top: 10px;
+					font-weight: 600;
+				}
+				p {
+					padding-left: 10px;
+				}
+			</style>
 		{/snippet}
 	</Popup>
 </div>
