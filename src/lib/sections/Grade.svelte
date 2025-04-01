@@ -1,18 +1,16 @@
 <script>
-	import { logs } from "../main";
-
 	let { element } = $props();
-	if (logs.grade) {
-			console.log("grade");
-			console.log(element);
-	}
 </script>
 
 <a class="grade" href={element.url + "/grades"} target="_blank">
 	<h3>{element.name}</h3>
 	<p class={element.gradeType}>{element.gradeText}</p>
 	{#if typeof element.grade == "number"}
-		<progress class="progress progress-primary {element.gradeType}" max="100" value={element.grade}></progress>
+		<progress
+			class="progress progress-primary {element.gradeType}"
+			max="100"
+			value={element.grade}
+		></progress>
 	{/if}
 </a>
 

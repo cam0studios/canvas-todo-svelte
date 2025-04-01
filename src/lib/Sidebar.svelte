@@ -1,8 +1,6 @@
 <script>
 	import SidebarItem from "./SidebarItem.svelte";
-	import { middleTimeSheet, highTimeSheet } from "../times";
-	import { currentSectionStore, logs } from "./main";
-	import Popup from "./Popup.svelte";
+	import { currentSectionStore } from "./main";
 
 	const sidebarItems = [
 		{
@@ -51,7 +49,7 @@
 				iconType: "icon",
 			},
 		],
-		...sidebarItems.filter((e) => !("url" in e))
+		...sidebarItems.filter((e) => !("url" in e)),
 	];
 </script>
 
@@ -65,11 +63,11 @@
 		<SidebarItem
 			{hover}
 			{url}
-			click={section
-				? () => {
-						currentSectionStore.set(section);
-					}
-				: click}
+			click={section ?
+				() => {
+					currentSectionStore.set(section);
+				}
+			:	click}
 			{icon}
 			{iconType}
 			selected={$currentSectionStore == section}

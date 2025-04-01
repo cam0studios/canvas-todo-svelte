@@ -2,7 +2,12 @@
 	import Sidebar from "./lib/Sidebar.svelte";
 	import Section from "./lib/Section.svelte";
 	import Popup from "./lib/Popup.svelte";
-	import { setToken, timesSchool, currentMessagesStore, currentAnnouncementStore } from "./lib/main";
+	import {
+		setToken,
+		timesSchool,
+		currentMessagesStore,
+		currentAnnouncementStore,
+	} from "./lib/main";
 	import { highTimeSheet, middleTimeSheet } from "./times";
 </script>
 
@@ -61,10 +66,12 @@
 	<Popup id="view-messages" title={$currentMessagesStore.subject}>
 		{#snippet content()}
 			{#each $currentMessagesStore.messages as message}
-				<h2>{message.from} - {message.at.toLocaleString(undefined, {
-					timeStyle: "short",
-					dateStyle: "full",
-				})}</h2>
+				<h2>
+					{message.from} - {message.at.toLocaleString(undefined, {
+						timeStyle: "short",
+						dateStyle: "full",
+					})}
+				</h2>
 				<div>
 					{#each message.body.split("\n") as line}
 						<p>{line}</p>

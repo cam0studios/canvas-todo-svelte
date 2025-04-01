@@ -8,7 +8,6 @@
 	/** @type {SectionProperties}*/
 	let { type, name } = $props();
 	import {
-		updateStores,
 		todoStore,
 		gradeStore,
 		inboxStore,
@@ -24,9 +23,7 @@
 </script>
 
 <div
-	class="section {$currentSectionStore == type
-		? 'active'
-		: 'inactive'}"
+	class="section {$currentSectionStore == type ? 'active' : 'inactive'}"
 	id={type}
 >
 	<h1>{name}</h1>
