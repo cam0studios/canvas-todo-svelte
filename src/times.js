@@ -1,7 +1,31 @@
+/**
+ * @typedef {object} Period
+ * @property {string} [name] - Name of the period
+ * @property {string|number} [id] - ID of the period
+ * @property {number} start - Start time of the period
+ * @property {number} end - End time of the period
+ *
+ * @typedef {object} PeriodString
+ * @property {string} times - Time string in the format "HH:MM-HH:MM"
+ * @property {number} id - ID of the period
+ * @property {string} [name] - Name of the period
+ */
+
+/**
+ * Helper class for generating timesheets
+ */
 export class TimeSheet {
+	/**
+	 * Creates a new TimeSheet instance
+	 * @param {Period[]} periods - Array of periods
+	 */
 	constructor(periods = [{ name: "1", start: 0, end: 0 }]) {
 		this.periods = periods;
 	}
+	/**
+	 * Gets the current period
+	 * @returns {{period: Period, timeLeft: number} | null} - The current period and time left, or null if out of school hours
+	 */
 	getCurrentPeriod() {
 		let currentTime = TimeSheet.currentTime;
 		let periods = this.periods;
@@ -28,16 +52,31 @@ export class TimeSheet {
 		}
 		return null;
 	}
+	/**
+	 * Gets the current time in minutes
+	 * @returns {number} - The current time in minutes
+	 */
 	static get currentTime() {
 		let now = new Date();
 		return now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
 	}
+	/**
+	 * Converts a time string to minutes
+	 * @param {string} time - Time string in the format "HH:MM"
+	 * @returns {number} - The time in minutes
+	 */
 	static getTimeFromString(time = "12:00") {
 		let hour = parseInt(time.split(":")[0]);
 		let minute = parseInt(time.split(":")[1]);
 		if (hour < 5) hour += 12;
 		return hour * 60 + minute;
 	}
+	/**
+	 * Formats a time in minutes to a string
+	 * @param {number} time - Time in minutes
+	 * @param {{hour: boolean, minute: boolean, second: boolean}} include - Whether to include hours, minutes, and seconds
+	 * @returns {string} - The formatted time string
+	 */
 	static formatTime(
 		time = 0,
 		include = { hour: true, minute: true, second: false }
@@ -67,6 +106,11 @@ export class TimeSheet {
 		}
 		return ret;
 	}
+	/**
+	 * Converts an array of period strings to an array of period objects
+	 * @param {PeriodString[]} periods - Array of period strings
+	 * @returns {Period[]} - Array of period objects
+	 */
 	static getPeriodsFromStrings(periods = [{ times: "12:00-12:00", id: 0 }]) {
 		return periods.map((p) => {
 			if (!p.name) p.name = p.id.toString();
@@ -79,6 +123,16 @@ export class TimeSheet {
 	}
 }
 
+/**
+ * Creates a middle school time sheet
+ * @param {object[]} schedules Schedules for the time sheet
+ * @property {PeriodString[]} schedules[].periods - Array of period strings
+ * @property {number} schedules[].lunchStart - Start period for lunch
+ * @property {number} schedules[].lunchEnd - End period for lunch
+ * @property {number[]} schedules[].lunches - Array of lunch periods
+ * @property {{ from: number, to: string }[]} schedules[].replace - Array of objects to replace periods
+ * @returns {{ schedules: TimeSheet[][], schedule: number, grade: number, current: { period: Period, timeLeft: number } }} - The time sheet object
+ */
 export function createMiddleTimeSheet(
 	schedules = [
 		{
@@ -138,10 +192,7 @@ export function createMiddleTimeSheet(
 		fixedSchedules.push(grades);
 	}
 	return {
-		schedules: fixedSchedules.map((s) => ({
-			periods: s.map((g) => new TimeSheet(g)),
-			...s,
-		})),
+		schedules: fixedSchedules.map((s) => s.map((g) => new TimeSheet(g))),
 		get schedule() {
 			return parseInt(localStorage.getItem("middle-times-schedule")) || 0;
 		},
@@ -155,13 +206,18 @@ export function createMiddleTimeSheet(
 			localStorage.setItem("middle-times-grade", val.toString());
 		},
 		get current() {
-			return this.schedules[this.schedule].periods[
-				this.grade
-			].getCurrentPeriod();
+			return this.schedules[this.schedule][this.grade].getCurrentPeriod();
 		},
 	};
 }
 
+/**
+ * Creates a high school time sheet
+ * @param {object[]} schedules
+ * @property {PeriodString[]} schedules[].periods - Array of period strings
+ * @property {PeriodString[]} schedules[].lunches - Array of lunch period strings
+ * @returns {{schedules: TimeSheet[][], schedule: number, day: number, lunchDays: {0: number, 1: number}, current: {period: Period, timeLeft: number}, updateDay: function}}
+ */
 export function createHighTimeSheet(
 	schedules = [
 		{
@@ -233,10 +289,7 @@ export function createHighTimeSheet(
 		fixedSchedules.push(lunchSchedules);
 	}
 	return {
-		schedules: fixedSchedules.map((s) => ({
-			periods: s.map((g) => new TimeSheet(g)),
-			...s,
-		})),
+		schedules: fixedSchedules.map((s) => s.map((g) => new TimeSheet(g))),
 		get schedule() {
 			return parseInt(localStorage.getItem("high-times-schedule")) || 0;
 		},
@@ -276,10 +329,14 @@ export function createHighTimeSheet(
 			this.lunchDays[1] = val[1];
 		},
 		get current() {
-			return this.schedules[this.schedule].periods[
+			return this.schedules[this.schedule][
 				this.lunchDays[this.day]
 			].getCurrentPeriod();
 		},
+		/**
+		 * Updates the A/B day
+		 * @returns {Promise<number|void>} - If day changed, return the new day, otherwise undefined
+		 */
 		async updateDay() {
 			try {
 				let day = (
