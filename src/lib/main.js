@@ -147,25 +147,27 @@ export async function updateAnnouncements() {
 		let data = {
 			type: "announcement",
 			url: element.html_url,
-			title: element.title,
-			from: element.author.display_name,
-			at: new Date(element.posted_at),
-			shortMessage: element.message
-				.replaceAll(/<[^>]*>/gi, " ")
-				.replaceAll("&nbsp;", " ")
-				.replaceAll("&amp;", "&")
-				.replaceAll("↵", " ")
-				.replaceAll("<br>", "\n")
-				.replaceAll("<br/>", "\n")
-				.trim(),
-			message: element.message
-				.replaceAll("<br>", "\n")
-				.replaceAll("<br/>", "\n")
-				.replaceAll(/<[^>]*>/gi, " ")
-				.replaceAll("&nbsp;", " ")
-				.replaceAll("&amp;", "&")
-				.replaceAll("↵", "\n")
-				.trim(),
+			title: element.title || "No title",
+			from: element.author.display_name || "No sender",
+			at: new Date(element.posted_at) || new Date(),
+			shortMessage:
+				element.message
+					.replaceAll(/<[^>]*>/gi, " ")
+					.replaceAll("&nbsp;", " ")
+					.replaceAll("&amp;", "&")
+					.replaceAll("↵", " ")
+					.replaceAll("<br>", "\n")
+					.replaceAll("<br/>", "\n")
+					.trim() || "No message",
+			message:
+				element.message
+					.replaceAll("<br>", "\n")
+					.replaceAll("<br/>", "\n")
+					.replaceAll(/<[^>]*>/gi, " ")
+					.replaceAll("&nbsp;", " ")
+					.replaceAll("&amp;", "&")
+					.replaceAll("↵", "\n")
+					.trim() || "No message",
 		};
 		if (data.shortMessage.length > 150) {
 			data.shortMessage = data.shortMessage.substring(0, 150) + "...";
@@ -188,15 +190,16 @@ export async function updateInbox() {
 		let data = {
 			type: "inbox",
 			id: element.id,
-			title: element.subject,
-			from: element.context_name,
-			at: new Date(element.last_message_at),
-			shortMessage: element.last_message
-				.replaceAll(/<[^>]*>/gi, " ")
-				.replaceAll("&nbsp;", " ")
-				.replaceAll("&amp;", "&")
-				.replaceAll("↵", " ")
-				.trim(),
+			title: element.subject || "No subject",
+			from: element.context_name || "No sender",
+			at: new Date(element.last_message_at) || new Date(),
+			shortMessage:
+				element.last_message
+					.replaceAll(/<[^>]*>/gi, " ")
+					.replaceAll("&nbsp;", " ")
+					.replaceAll("&amp;", "&")
+					.replaceAll("↵", " ")
+					.trim() || "No message",
 		};
 		if (data.shortMessage.length > 150) {
 			data.shortMessage = data.shortMessage.substring(0, 150) + "...";
@@ -286,7 +289,10 @@ setInterval(() => {
 			second: true,
 		})
 	);
-	currentPeriodStore.set(current.period);
+	currentPeriodStore.set({
+		name: current.period.name || "",
+		...current.period,
+	});
 }, 1000);
 
 export const currentSectionStore = writable("none");

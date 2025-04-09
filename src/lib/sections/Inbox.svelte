@@ -9,7 +9,17 @@
 </script>
 
 {#snippet content()}
-	<h3>{element.title}</h3>
+	<h3>
+		<a
+			href={element.type == "inbox" ?
+				"https://hcpss.instructure.com/conversations"
+			:	element.url}
+			target="_blank"
+			onclick={(ev) => {
+				ev.stopPropagation();
+			}}>{element.title}</a
+		>
+	</h3>
 	<p>{element.type == "inbox" ? "Inbox" : "Announcement"} - {element.from}</p>
 	<p>
 		{element.at.toLocaleString(undefined, {
