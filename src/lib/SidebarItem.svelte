@@ -63,6 +63,7 @@
 		}
 		& .dock-label {
 			font-size: 12px !important;
+			padding: 0;
 		}
 		&:first-of-type {
 			height: 85px;
