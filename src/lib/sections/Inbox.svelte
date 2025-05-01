@@ -34,6 +34,7 @@
 	<button
 		class="inbox"
 		onclick={async () => {
+			console.log("click");
 			currentMessagesStore.set({
 				subject: `Loading "${element.title}"...`,
 				messages: [],
@@ -67,6 +68,7 @@
 	<button
 		class="inbox"
 		onclick={() => {
+			console.log("click");
 			currentAnnouncementStore.set({
 				title: element.title,
 				message: element.message,

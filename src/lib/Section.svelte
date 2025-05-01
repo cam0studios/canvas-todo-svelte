@@ -18,6 +18,7 @@
 	import Inbox from "./sections/Inbox.svelte";
 
 	let click = (ev) => {
+		if (!ev.isTrusted) return;
 		ev.target.firstElementChild?.click();
 	};
 </script>
