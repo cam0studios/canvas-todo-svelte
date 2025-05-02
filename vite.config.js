@@ -9,7 +9,8 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
 			plugins: [
 				svelte(),
 				tailwindcss()
-			]
+			],
+			base: "/canvas-todo-svelte"
 		}
 	}
 	return {
