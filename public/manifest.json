@@ -58,7 +58,7 @@
 			"type": "image/png"
 		}
 	],
-	"start_url": "./canvas-todo-svelte/",
+	"start_url": "/canvas-todo-svelte/",
 	"display": "standalone",
 	"background_color": "#f5f5f5",
 	"theme_color": "#f5f5f5",
