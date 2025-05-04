@@ -2,6 +2,15 @@ import { writable, get } from "svelte/store";
 
 import { highTimeSheet, middleTimeSheet, TimeSheet } from "../times";
 
+if (location.href.includes("devtunnels")) {
+	let script = document.createElement("script");
+	script.src = "https://cdn.jsdelivr.net/npm/eruda";
+	script.onload = () => {
+		eruda.init();
+	}
+	document.head.appendChild(script);
+}
+
 export var apiToken = localStorage.getItem("api-token") || "";
 export const apiURLs = [
 	"https://hcpss.space/api/canvas/v1",

@@ -97,6 +97,10 @@
 		background-color: rgb(57, 75, 88);
 		z-index: 1000;
 		padding: 0;
+		padding-bottom: calc(env(safe-area-inset-bottom) / 2);
+		padding-left: calc(env(safe-area-inset-bottom) / 2);
+		padding-right: calc(env(safe-area-inset-bottom) / 2);
+		
 		@media only screen and (max-width: 600px) {
 			display: flex !important;
 		}
