@@ -30,17 +30,18 @@
 						setToken(input.target.value);
 					}}
 				/>
-				<p class="fieldset-label">
-					Generate one
+				<div class="fieldset-label label-with-link">
+					<span>Generate one&nbsp;</span>
 					<a
 						href="https://hcpss.instructure.com/profile/settings"
 						target="_blank"
 						class="link">here</a
 					>
-				</p>
+					<span>.</span>
+				</div>
 
 				<legend class="fieldset-legend">Notification Badge</legend>
-				<select name="notification-badge" id="notification-badge" class="select" disabled={!("Notification" in window) || Notification?.permission == "denied"} oninput={(input) => {
+				<select name="notification-badge" id="notification-badge" class="select" disabled={!("Notification" in window && "setAppBadge" in navigator) || Notification?.permission == "denied"} oninput={(input) => {
 					if ((input.target.value != "0" && Notification?.permission !== "granted") || !("Notification" in window)) {
 						Notification.requestPermission().then((permission) => {
 							if (permission === "granted") {
@@ -66,7 +67,20 @@
 					<option value="1" selected={localStorage.getItem("notification-badge") == "1"}
 						>Todo</option
 					>
+					<option value="2" selected={localStorage.getItem("notification-badge") == "2"}
+						>Missing</option
+					>
 				</select>
+				{#if !("Notification" in window && "setAppBadge" in navigator) || Notification?.permission == "denied"}
+					<p class="fieldset-label">
+						Notification badge is not supported on this browser.
+					</p>
+				{:else if Notification?.permission == "denied"}
+					<p class="fieldset-label">
+						You have denied notifications. Please enable them to use the notification badge.
+					</p>
+					
+				{/if}
 			</fieldset>
 		{/snippet}
 	</Popup>
@@ -288,5 +302,10 @@
 	legend {
 		font-size: 13px;
 		margin-left: 10px;
+	}
+	.label-with-link {
+		display: flex;
+		align-items: center;
+		gap: 0;
 	}
 </style>

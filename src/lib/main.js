@@ -24,12 +24,18 @@ export const inboxStore = writable([]);
 
 if ("Notification" in window && "setAppBadge" in navigator) {
 	todoStore.subscribe((value) => {
-		if (localStorage.getItem("notification-badge") == "1" && Array.isArray(value) && !value.includes("loading")) {
-			navigator.setAppBadge(value.length);
+		if (Array.isArray(value) && !value.includes("loading")) {
+			if (localStorage.getItem("notification-badge") == "1") {
+				navigator.setAppBadge(value.length);
+			} else if (localStorage.getItem("notification-badge") == "2") {
+				navigator.setAppBadge(value.filter((item) => item.dueType === "late").length);
+			}
 		} else {
 			navigator.clearAppBadge();
 		}
 	});
+} else {
+	localStorage.setItem("notification-badge", "0");
 }
 
 export var timesSchool = writable(
