@@ -276,7 +276,7 @@
 		padding: 0;
 		@media only screen and (max-width: 600px) {
 			width: 100%;
-			height: calc(100% - 56px - env(safe-area-inset-bottom) / 2) !important;
+			height: calc(100% - 56px - env(safe-area-inset-bottom)) !important;
 		}
 	}
 	.table th {
