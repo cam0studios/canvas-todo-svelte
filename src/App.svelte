@@ -7,6 +7,7 @@
 		timesSchool,
 		currentMessagesStore,
 		currentAnnouncementStore,
+        updateStores,
 	} from "./lib/main";
 	import { highTimeSheet, middleTimeSheet } from "./times";
 </script>
@@ -37,6 +38,35 @@
 						class="link">here</a
 					>
 				</p>
+
+				<legend class="fieldset-legend">Notification Badge</legend>
+				<select name="notification-badge" id="notification-badge" class="select" disabled={!("Notification" in window) || Notification?.permission == "denied"} oninput={(input) => {
+					if ((input.target.value != "0" && Notification?.permission !== "granted") || !("Notification" in window)) {
+						Notification.requestPermission().then((permission) => {
+							if (permission === "granted") {
+								localStorage.setItem("notification-badge", input.target.value);
+								updateStores();
+							} else {
+								localStorage.setItem("notification-badge", "0");
+								document.querySelector("#notification-badge").value = "0";
+							}
+						});
+					} else {
+						localStorage.setItem("notification-badge", input.target.value);
+						if (input.target.value == "0") {
+							navigator.clearAppBadge();
+						} else {
+							updateStores();
+						}
+					}
+				}}>
+					<option value="0" selected={localStorage.getItem("notification-badge") == "0" || localStorage.getItem("notification-badge") == null}
+						>None</option
+					>
+					<option value="1" selected={localStorage.getItem("notification-badge") == "1"}
+						>Todo</option
+					>
+				</select>
 			</fieldset>
 		{/snippet}
 	</Popup>
@@ -232,6 +262,7 @@
 	@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
 	:root {
 		font-family: "Nunito Sans";
+		min-height: calc(100% + env(safe-area-inset-top));
 	}
 	#content {
 		width: calc(100% - 60px);
@@ -245,7 +276,7 @@
 		padding: 0;
 		@media only screen and (max-width: 600px) {
 			width: 100%;
-			height: calc(100% - 56px) !important;
+			height: calc(100% - 90px) !important;
 		}
 	}
 	.table th {

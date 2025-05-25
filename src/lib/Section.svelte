@@ -116,6 +116,7 @@
 			display: none;
 			left: 0 !important;
 			width: 100%;
+  			padding-top: calc(env(safe-area-inset-top) * 0.7);
 			&.active {
 				display: flex;
 			}

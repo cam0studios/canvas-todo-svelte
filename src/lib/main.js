@@ -22,6 +22,16 @@ export const todoStore = writable([]);
 export const gradeStore = writable([]);
 export const inboxStore = writable([]);
 
+if ("Notification" in window && "setAppBadge" in navigator) {
+	todoStore.subscribe((value) => {
+		if (localStorage.getItem("notification-badge") == "1" && Array.isArray(value) && !value.includes("loading")) {
+			navigator.setAppBadge(value.length);
+		} else {
+			navigator.clearAppBadge();
+		}
+	});
+}
+
 export var timesSchool = writable(
 	parseInt(localStorage.getItem("times-school")) || 0
 );
@@ -148,7 +158,7 @@ export async function updateAnnouncements() {
 	let res2 = await getAPI(
 		"announcements",
 		"per_page=20&" +
-			res.map((course) => `context_codes[]=course_${course.id}`).join("&")
+		res.map((course) => `context_codes[]=course_${course.id}`).join("&")
 	);
 	if (res2?.errors?.length > 0)
 		return { error: res2.errors.map((e) => e.message).join("<br>") };
