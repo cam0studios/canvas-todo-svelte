@@ -65,10 +65,13 @@
 						>None</option
 					>
 					<option value="1" selected={localStorage.getItem("notification-badge") == "1"}
-						>Todo</option
+						>Todo assignments</option
 					>
 					<option value="2" selected={localStorage.getItem("notification-badge") == "2"}
-						>Missing</option
+						>Missing assignments</option
+					>
+					<option value="2" selected={localStorage.getItem("notification-badge") == "3"}
+						>Assignments due today or missing</option
 					>
 				</select>
 				{#if !("Notification" in window && "setAppBadge" in navigator) || Notification?.permission == "denied"}
