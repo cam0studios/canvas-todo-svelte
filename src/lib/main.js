@@ -28,7 +28,9 @@ if ("Notification" in window && "setAppBadge" in navigator) {
 			if (localStorage.getItem("notification-badge") == "1") {
 				navigator.setAppBadge(value.length);
 			} else if (localStorage.getItem("notification-badge") == "2") {
-				navigator.setAppBadge(value.filter((item) => item.dueType === "late").length);
+				navigator.setAppBadge(value.filter((item) => item.dueType == "late").length);
+			} else if (localStorage.getItem("notification-badge") == "3") {
+				navigator.setAppBadge(value.filter((item) => item.dueType == "late" || item.dueType == "today").length);
 			}
 		} else {
 			navigator.clearAppBadge();
