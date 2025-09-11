@@ -139,17 +139,17 @@ export async function updateGrades() {
 			data.gradeType = getGradeColor(data.grade);
 			data.gradeText = data.grade + "%";
 		}
-		function getGradeColor(grade) {
-			if (grade > 94.5) {
-				return "reallygood";
-			} else if (grade >= 89.5) {
-				return "good";
+		function getGradeColor(grade = 0) {
+			if (grade >= 89.5) {
+				return "green-grade";
 			} else if (grade >= 79.5) {
-				return "mid";
+				return "blue-grade";
 			} else if (grade >= 69.5) {
-				return "bad";
+				return "yellow-grade";
+			} else if (grade >= 59.5) {
+				return "orange-grade";
 			} else {
-				return "reallybad";
+				return "red-grade";
 			}
 		}
 		return data;

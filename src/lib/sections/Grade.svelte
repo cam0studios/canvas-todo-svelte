@@ -16,11 +16,11 @@
 
 <style>
 	.grade {
-		--reallygood: rgb(30, 210, 20);
-		--good: rgb(50, 150, 250);
-		--mid: rgb(230, 210, 50);
-		--bad: rgb(250, 120, 50);
-		--reallybad: rgb(200, 0, 0);
+		--green-grade: rgb(30, 210, 20);
+		--blue-grade: rgb(50, 150, 250);
+		--yellow-grade: rgb(230, 210, 50);
+		--orange-grade: rgb(250, 120, 50);
+		--red-grade: rgb(200, 0, 0);
 		all: unset;
 		max-width: 100%;
 		padding-bottom: 0;
@@ -36,40 +36,40 @@
 			font-size: 16px;
 			filter: brightness(0.5);
 		}
-		p.reallygood {
-			color: var(--reallygood);
+		p.green-grade {
+			color: var(--green-grade);
 		}
-		p.good {
-			color: var(--good);
+		p.blue-grade {
+			color: var(--blue-grade);
 		}
-		p.mid {
-			color: var(--mid);
+		p.yellow-grade {
+			color: var(--yellow-grade);
 		}
-		p.bad {
-			color: var(--bad);
+		p.orange-grade {
+			color: var(--orange-grade);
 		}
-		p.reallybad {
-			color: var(--reallybad);
+		p.red-grade {
+			color: var(--red-grade);
 		}
 
 		progress {
 			margin-bottom: 0;
 		}
 
-		progress.reallygood {
-			color: var(--reallygood);
+		progress.green-grade {
+			color: var(--green-grade);
 		}
-		progress.good {
-			color: var(--good);
+		progress.blue-grade {
+			color: var(--blue-grade);
 		}
-		progress.mid {
-			color: var(--mid);
+		progress.yellow-grade {
+			color: var(--yellow-grade);
 		}
-		progress.bad {
-			color: var(--bad);
+		progress.orange-grade {
+			color: var(--orange-grade);
 		}
-		progress.reallybad {
-			color: var(--reallybad);
+		progress.red-grade {
+			color: var(--red-grade);
 		}
 	}
 </style>
