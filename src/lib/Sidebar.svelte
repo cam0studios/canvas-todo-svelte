@@ -19,7 +19,7 @@
 			iconType: "icon",
 		},
 		{
-			hover: "$timeLeft in $period",
+			hover: "$timedata",
 			click: () => {
 				// @ts-ignore
 				document.querySelector("#times").showModal();

@@ -12,9 +12,7 @@
 	{/if}
 	{#if $isMobile}
 		<p class="dock-label">
-			{hover
-				.replaceAll("$timeLeft", $timeLeftStore)
-				.replaceAll("$period", $currentPeriodStore.name)}
+			{hover.replaceAll("$timedata", $timeLeftStore)}
 		</p>
 	{/if}
 {/snippet}
@@ -30,9 +28,7 @@
 		</button>
 	{/if}
 	<p>
-		{hover
-			.replaceAll("$timeLeft", $timeLeftStore)
-			.replaceAll("$period", $currentPeriodStore.name)}
+		{hover.replaceAll("$timedata", `${$timeLeftStore} left in ${$currentPeriodStore.name.includes("Lunch") ? $currentPeriodStore.name : `Period ${$currentPeriodStore.name.replace("Lunch", "").trim()}`}`)}
 	</p>
 </div>
 
