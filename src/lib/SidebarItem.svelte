@@ -1,5 +1,5 @@
 <script>
-	import { currentPeriodStore, isMobile, timeLeftStore } from "./main";
+	import { currentPeriodStore, isMobile, timeLeftDetailedStore, timeLeftStore } from "./main";
 
 	let { hover, click, url, icon, iconType, selected = false } = $props();
 </script>
@@ -12,7 +12,7 @@
 	{/if}
 	{#if $isMobile}
 		<p class="dock-label">
-			{hover.replaceAll("$timedata", $timeLeftStore)}
+			{hover.replaceAll("$timedata", $timeLeftDetailedStore)}
 		</p>
 	{/if}
 {/snippet}
@@ -28,7 +28,7 @@
 		</button>
 	{/if}
 	<p>
-		{hover.replaceAll("$timedata", `${$timeLeftStore} left in ${$currentPeriodStore.name.includes("Lunch") ? $currentPeriodStore.name : `Period ${$currentPeriodStore.name.replace("Lunch", "").trim()}`}`)}
+		{hover.replaceAll("$timedata", $timeLeftDetailedStore)}
 	</p>
 </div>
 

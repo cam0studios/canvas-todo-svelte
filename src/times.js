@@ -43,7 +43,7 @@ export class TimeSheet {
 				return {
 					period: {
 						name: "Transition",
-						start: periods[periods.indexOf(period)].end,
+						start: periods[periods.indexOf(period) - 1].end,
 						end: period.start,
 					},
 					timeLeft: period.start - currentTime,
@@ -83,13 +83,13 @@ export class TimeSheet {
 	) {
 		if (include.hour && !include.minute && include.second) {
 			throw new Error(
-				"Cannot including hours and seconds without minutes"
+				"Cannot include hours and seconds without minutes"
 			);
 		}
 		let hour = include.hour ? Math.floor(time / 60) : 0;
 		let minute = include.minute ? Math.floor(time - hour * 60) : 0;
 		let second = include.second
-			? Math.floor((time - hour * 60 - minute) * 60)
+			? Math.round((time - hour * 60 - minute) * 60)
 			: 0;
 		let ret = "";
 		if (include.hour) {

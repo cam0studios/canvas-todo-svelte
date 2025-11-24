@@ -1,4 +1,4 @@
-import { writable, get } from "svelte/store";
+import { writable, get, derived } from "svelte/store";
 
 import { highTimeSheet, middleTimeSheet, TimeSheet } from "../times";
 
@@ -300,8 +300,13 @@ export const timeLeftStore = writable("...");
 export const currentPeriodStore = writable({ name: "", start: 0, end: 0 });
 
 highTimeSheet.updateDay();
-
-setInterval(() => {
+let lastTime = 0;
+let updateTimeFunc = () => {
+	if (Date.now() - lastTime < 250) {
+		requestAnimationFrame(updateTimeFunc);
+		return;
+	}
+	lastTime = Date.now();
 	let current =
 		get(timesSchool) == 0 ? middleTimeSheet.current : highTimeSheet.current;
 	if (current == null) {
@@ -320,7 +325,9 @@ setInterval(() => {
 		name: current.period.name || "",
 		...current.period,
 	});
-}, 1000);
+	requestAnimationFrame(updateTimeFunc);
+}
+updateTimeFunc();
 
 export const currentSectionStore = writable("none");
 export const isMobile = writable(false);
@@ -339,6 +346,19 @@ isMobile.subscribe((value) => {
 	} else if (!value) {
 		currentSectionStore.set("none");
 	}
+});
+
+export const timeLeftDetailedStore = derived([timeLeftStore, currentPeriodStore, isMobile], ([$timeLeftStore, $currentPeriodStore, $isMobile]) => {
+	if ($isMobile) {
+		if ($currentPeriodStore.name == "none") {
+			return "No Time";
+		}
+		return $timeLeftStore;
+	}
+	if ($currentPeriodStore.name == "none") {
+		return "Out of School";
+	}
+	return `${$timeLeftStore} left in ${$currentPeriodStore.name.includes("Lunch") ? $currentPeriodStore.name : `Period ${$currentPeriodStore.name.replace("Lunch", "").trim()}`}`;
 });
 
 export const currentMessagesStore = writable({ subject: "", messages: [] });
