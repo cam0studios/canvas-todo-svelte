@@ -474,7 +474,7 @@ export var highTimeSheet = createHighTimeSheet([
 			{ id: "5", times: "10:15-10:45" },
 			{ id: "6", times: "10:50-11:20" },
 		],
-		lunches: [{ id: "Grab n Go", times: "11:20-11:35" }],
+		lunches: [...new Array(4).fill({ id: "Grab n Go", times: "11:20-11:35" })],
 	},
 	{
 		periods: [
