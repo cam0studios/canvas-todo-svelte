@@ -2,7 +2,7 @@ import { writable, get, derived } from "svelte/store";
 
 import { highTimeSheet, middleTimeSheet, TimeSheet } from "../times";
 
-if (location.href.includes("devtunnels")) {
+if (location.href.includes("devtunnels") && location.href.includes("eruda")) {
 	let script = document.createElement("script");
 	script.src = "https://cdn.jsdelivr.net/npm/eruda";
 	script.onload = () => {

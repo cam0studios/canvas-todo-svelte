@@ -11,6 +11,8 @@
  * @property {string} [name] - Name of the period
  */
 
+import { getDateString, getStatus, getToday } from "./calendar";
+
 /**
  * Helper class for generating timesheets
  */
@@ -131,7 +133,7 @@ export class TimeSheet {
  * @property {number} schedules[].lunchEnd - End period for lunch
  * @property {number[]} schedules[].lunches - Array of lunch periods
  * @property {{ from: number, to: string }[]} schedules[].replace - Array of objects to replace periods
- * @returns {{ schedules: TimeSheet[][], schedule: number, grade: number, current: { period: Period, timeLeft: number } }} - The time sheet object
+ * @returns {{ schedules: TimeSheet[][], schedule: number, grade: number, current: { period: Period, timeLeft: number }, updateDay: Function }} - The time sheet object
  */
 export function createMiddleTimeSheet(
 	schedules = [
@@ -207,6 +209,20 @@ export function createMiddleTimeSheet(
 		},
 		get current() {
 			return this.schedules[this.schedule][this.grade].getCurrentPeriod();
+		},
+		async updateDay() {
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+			let today = await getToday();
+			let status = await getStatus();
+			let scheduleOverride = localStorage.getItem("middle-times-schedule-override");
+			if (scheduleOverride != getDateString()) {
+				if (status != 0) {
+					this.schedule = status;
+				} else {
+					this.schedule = today.schedule;
+				}
+				localStorage.setItem("middle-times-schedule-override", "");
+			}
 		},
 	};
 }
@@ -295,12 +311,14 @@ export function createHighTimeSheet(
 		},
 		set schedule(val) {
 			localStorage.setItem("high-times-schedule", val.toString());
+			localStorage.setItem("high-times-schedule-override", getDateString());
 		},
 		get day() {
 			return parseInt(localStorage.getItem("high-times-day")) || 0;
 		},
 		set day(val) {
 			localStorage.setItem("high-times-day", val.toString());
+			localStorage.setItem("high-times-day-override", getDateString());
 		},
 		get lunchDays() {
 			return {
@@ -334,22 +352,29 @@ export function createHighTimeSheet(
 			].getCurrentPeriod();
 		},
 		/**
-		 * Updates the A/B day
-		 * @returns {Promise<number|void>} - If day changed, return the new day, otherwise undefined
+		 * Updates the A/B day and schedule
 		 */
 		async updateDay() {
-			try {
-				let day = (
-					await (
-						await fetch("https://hcpss.space/api/calendar/dayType")
-					).json()
-				).type;
-				if (day == "A") return (this.day = 0);
-				if (day == "B") return (this.day = 1);
-				return;
-			} catch (err) {
-				console.error(err);
-				return err;
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+			let today = await getToday();
+			let status = await getStatus();
+			let scheduleOverride = localStorage.getItem("high-times-schedule-override");
+			let dayOverride = localStorage.getItem("high-times-day-override");
+			if (scheduleOverride != getDateString()) {
+				if (status != 0) {
+					this.schedule = status;
+				} else if (this.schedule != 0) {
+					this.schedule = today.schedule;
+				} else if (new Date().getDay() == 3) {
+					this.schedule = 1;
+				} else {
+					this.schedule = 0;
+				}
+				localStorage.setItem("high-times-schedule-override", "");
+			}
+			if (dayOverride != getDateString()) {
+				this.day = today.day;
+				localStorage.setItem("high-times-day-override", "");
 			}
 		},
 	};
