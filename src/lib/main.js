@@ -6,6 +6,7 @@ if (location.href.includes("devtunnels") && location.href.includes("eruda")) {
 	let script = document.createElement("script");
 	script.src = "https://cdn.jsdelivr.net/npm/eruda";
 	script.onload = () => {
+		// @ts-ignore
 		eruda.init();
 	}
 	document.head.appendChild(script);
@@ -68,7 +69,9 @@ export async function updateStores() {
 		let res = await func();
 		current = get(store);
 		if (res?.error) {
+			// @ts-ignore
 			current = { error: res.error };
+			// @ts-ignore
 		} else if (!current?.error) {
 			current.push(...res);
 			if (current.includes("loading")) {
@@ -89,7 +92,10 @@ export async function updateTodo() {
 			new Date(a.assignment.due_at).getTime() -
 			new Date(b.assignment.due_at).getTime()
 	);
-	let data = res.map((element) => {
+	let ret = await Promise.all(res.map(async (element) => {
+		let res2 = await getAPI(`courses/${element.course_id}/assignments/${element.assignment.id}/submissions/self`);
+		if (res2.grade > 0) return;
+
 		let data = {
 			due: new Date(element.assignment.due_at),
 			name: element.assignment.name,
@@ -103,8 +109,9 @@ export async function updateTodo() {
 			data.dueType = "today";
 		}
 		return data;
-	});
-	return data;
+	}));
+	ret = ret.filter((e) => e !== undefined);
+	return ret;
 }
 export async function updateGrades() {
 	let res = await getAPI(
@@ -338,6 +345,7 @@ if (mobileMediaQuery.matches) {
 	isMobile.set(false);
 }
 mobileMediaQuery.addEventListener("change", (e) => {
+	// @ts-ignore
 	isMobile.set(e.target.matches);
 });
 isMobile.subscribe((value) => {
@@ -351,14 +359,14 @@ isMobile.subscribe((value) => {
 export const timeLeftDetailedStore = derived([timeLeftStore, currentPeriodStore, isMobile], ([$timeLeftStore, $currentPeriodStore, $isMobile]) => {
 	if ($isMobile) {
 		if ($currentPeriodStore.name == "none") {
-			return "No Time";
+			return "No School";
 		}
-		return $timeLeftStore;
+		return `${($currentPeriodStore.name.includes("Lunch") ? $currentPeriodStore.name.replace("Lunch", "") : $currentPeriodStore.name).trim()}-${$timeLeftStore}`;
 	}
 	if ($currentPeriodStore.name == "none") {
 		return "Out of School";
 	}
-	return `${$timeLeftStore} left in ${$currentPeriodStore.name.includes("Lunch") ? $currentPeriodStore.name : `Period ${$currentPeriodStore.name.replace("Lunch", "").trim()}`}`;
+	return `${$timeLeftStore} left in ${$currentPeriodStore.name.includes("Lunch") ? $currentPeriodStore.name : `Period ${$currentPeriodStore.name}`}`;
 });
 
 export const currentMessagesStore = writable({ subject: "", messages: [] });

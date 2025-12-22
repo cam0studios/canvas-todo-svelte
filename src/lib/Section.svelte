@@ -21,6 +21,12 @@
 		if (!ev.isTrusted) return;
 		ev.target.firstElementChild?.click();
 	};
+	let keypress = (ev) => {
+		if (!ev.isTrusted) return;
+		if (ev.key === "Enter" || ev.key === " ") {
+			ev.target.firstElementChild?.click();
+		}
+	};
 </script>
 
 <div
@@ -38,7 +44,7 @@
 				{#if element == "loading"}
 					<p class="loading">Loading...</p>
 				{:else}
-					<div class="sectionItem" onclick={click}>
+					<div class="sectionItem" onclick={click} onkeypress={keypress}>
 						<Todo {element} />
 					</div>
 				{/if}
@@ -54,7 +60,7 @@
 				{#if element == "loading"}
 					<p class="loading">Loading...</p>
 				{:else}
-					<div class="sectionItem" onclick={click}>
+					<div class="sectionItem" onclick={click} onkeypress={keypress}>
 						<Grade {element} />
 					</div>
 				{/if}
@@ -72,7 +78,7 @@
 			{#each $inboxStore
 				.filter((e) => e != "loading")
 				.sort((a, b) => b.at.getTime() - a.at.getTime()) as element}
-				<div class="sectionItem" onclick={click}>
+				<div class="sectionItem" onclick={click} onkeypress={keypress}>
 					<Inbox {element} />
 				</div>
 			{/each}
