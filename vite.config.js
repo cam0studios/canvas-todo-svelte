@@ -10,7 +10,7 @@ export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
 				svelte(),
 				tailwindcss()
 			],
-			base: "/canvas-todo-svelte"
+			base: "/"
 		}
 	}
 	return {

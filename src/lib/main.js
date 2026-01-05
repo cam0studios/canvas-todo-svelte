@@ -2,7 +2,7 @@ import { writable, get, derived } from "svelte/store";
 
 import { highTimeSheet, middleTimeSheet, TimeSheet } from "../times";
 
-if (location.href.includes("devtunnels") && location.href.includes("eruda")) {
+if (window && location.href.includes("devtunnels") && location.href.includes("eruda") && !("eruda" in window)) {
 	let script = document.createElement("script");
 	script.src = "https://cdn.jsdelivr.net/npm/eruda";
 	script.onload = () => {
@@ -73,7 +73,10 @@ export async function updateStores() {
 			current = { error: res.error };
 			// @ts-ignore
 		} else if (!current?.error) {
-			current.push(...res);
+			res.forEach(element => {
+				if (current.find(e => e.id === element.id)) return;
+				current.push(element);
+			});
 			if (current.includes("loading")) {
 				current.splice(current.indexOf("loading"), 1);
 			}
@@ -101,6 +104,7 @@ export async function updateTodo() {
 			name: element.assignment.name,
 			className: element.context_name,
 			url: element.html_url,
+			id: element.assignment.id
 		};
 		data.dueType = "";
 		if (data.due.getTime() < new Date().getTime()) {
@@ -139,6 +143,7 @@ export async function updateGrades() {
 			url: "https://hcpss.instructure.com/courses/" + element.id,
 			gradeText: "",
 			gradeType: "",
+			id: element.id
 		};
 		if (typeof data.grade != "number") {
 			data.gradeText = "N/A";
@@ -202,6 +207,7 @@ export async function updateAnnouncements() {
 					.replaceAll("&amp;", "&")
 					.replaceAll("↵", "\n")
 					.trim() || "No message",
+			id: element.id
 		};
 		if (data.shortMessage.length > 150) {
 			data.shortMessage = data.shortMessage.substring(0, 150) + "...";
