@@ -367,7 +367,10 @@ export const timeLeftDetailedStore = derived([timeLeftStore, currentPeriodStore,
 		if ($currentPeriodStore.name == "none") {
 			return "No School";
 		}
-		return `${($currentPeriodStore.name.includes("Lunch") ? $currentPeriodStore.name.replace("Lunch", "") : $currentPeriodStore.name).trim()}-${$timeLeftStore}`;
+		let name = $currentPeriodStore.name;
+		if (name.includes("Lunch")) name = name.replace("Lunch", "");
+		if (name.includes("Transition")) name = name.replace("Transition", "Trans");
+		return `${name.trim()}-${$timeLeftStore}`;
 	}
 	if ($currentPeriodStore.name == "none") {
 		return "Out of School";
