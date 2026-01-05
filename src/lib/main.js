@@ -89,7 +89,7 @@ export async function updateStores() {
 export async function updateTodo() {
 	let res = await getAPI("users/self/todo");
 	if (res?.errors?.length > 0)
-		return { error: res.errors.map((e) => e.message).join("<br>") };
+		return { error: res.errors.map((e) => getError(e)).join("<br>") };
 	res.sort(
 		(a, b) =>
 			new Date(a.assignment.due_at).getTime() -
@@ -123,7 +123,7 @@ export async function updateGrades() {
 		"enrollment_state=active&per_page=100&include%5B%5D=total_scores&include%5B%5D=current_grading_period_scores&include%5B%5D=grading_periods"
 	);
 	if (res?.errors?.length > 0)
-		return { error: res.errors.map((e) => e.message).join("<br>") };
+		return { error: res.errors.map((e) => getError(e)).join("<br>") };
 	res = res
 		.map((course) => ({
 			course,
@@ -174,7 +174,7 @@ export async function updateAnnouncements() {
 		"enrollment_state=active&per_page=20"
 	);
 	if (res?.errors?.length > 0)
-		return { error: res.errors.map((e) => e.message).join("<br>") };
+		return { error: res.errors.map((e) => getError(e)).join("<br>") };
 	let res2 = await getAPI(
 		"announcements",
 		"per_page=20&" +
@@ -225,7 +225,7 @@ export async function updateInbox() {
 		"enrollment_state=active&per_page=20"
 	);
 	if (res?.errors?.length > 0)
-		return { error: res.errors.map((e) => e.message).join("<br>") };
+		return { error: res.errors.map((e) => getError(e)).join("<br>") };
 	let data = res.map((element) => {
 		let data = {
 			type: "inbox",
@@ -273,6 +273,14 @@ export async function getAPI(endpoint = "", options = "") {
 		console.error(err);
 		return { errors: [err] };
 	}
+}
+
+function getError(error) {
+	let message = error.message.toLowerCase();
+	if (message.endsWith(".")) message = message.slice(0, -1);
+	if (message.includes("auth") && message.includes("require")) message += " - check settings for key";
+	if (message.includes("invalid") && message.includes("token")) message += " - check settings for key";
+	return message;
 }
 
 async function checkURLs(n = 0) {
